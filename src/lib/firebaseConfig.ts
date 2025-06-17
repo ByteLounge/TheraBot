@@ -3,9 +3,11 @@
 // Go to Project Overview (gear icon) > Project settings > General tab > Your apps > SDK setup and configuration.
 //
 // CRITICAL: Ensure 'projectId' is correct, otherwise Firestore and other services will not work.
+// CRITICAL: FILL IN ALL PLACEHOLDERS BELOW.
+// CRITICAL: The apiKey below was recently provided by you. Ensure all other values are correct for your Firebase project.
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk", // This was set based on your previous request
+  apiKey: "AIzaSyBDRfsXeb7Rg43AWGzD8PPOVNTX9-f4NBY", // Updated based on your recent input
   authDomain: "FILL_IN_YOUR_AUTH_DOMAIN", // e.g., your-project-id.firebaseapp.com
   projectId: "FILL_IN_YOUR_PROJECT_ID", // e.g., your-project-id
   storageBucket: "FILL_IN_YOUR_STORAGE_BUCKET", // e.g., your-project-id.appspot.com
@@ -14,17 +16,27 @@ export const firebaseConfig = {
   measurementId: "YOUR_MEASUREMENT_ID" // Optional, e.g., G-XXXXXXXXXX
 };
 
-// After configuring this file:
+// After configuring this file with ALL YOUR ACTUAL Firebase project details:
 // 1. Ensure you have enabled Email/Password sign-in in Firebase Authentication.
-// 2. Set up Firestore Database in your Firebase project (select a region).
-// 3. IMPORTANT: Configure your Firestore Security Rules in the Firebase console to allow read/write access for your app's users.
-//    A common starting point for development (NOT for production) might be:
+// 2. Set up Firestore Database in your Firebase project (select a region if prompted).
+// 3. IMPORTANT: Configure your Firestore Security Rules in the Firebase console.
+//    The rules determine who can read/write data. If they are too restrictive,
+//    you will get errors like "client is offline" or permission denied.
+//    For development, a common starting point (NOT for production) might be:
 //    rules_version = '2';
 //    service cloud.firestore {
 //      match /databases/{database}/documents {
-//        match /users/{userId}/{document=**} { // Allows access to user-specific data
+//        // Allow authenticated users to read and write their own documents in the 'users' collection
+//        match /users/{userId} {
 //          allow read, write: if request.auth != null && request.auth.uid == userId;
 //        }
+//        // Allow authenticated users to read and write documents in their own 'chatSessions' subcollection
+//        match /users/{userId}/chatSessions/{sessionId} {
+//          allow read, write: if request.auth != null && request.auth.uid == userId;
+//        }
+//        // Add other rules as needed for your application
 //      }
 //    }
+//    Publish these rules in the Firebase console (Firestore Database > Rules).
 // 4. For Google Maps, ensure you have NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable set.
+// 5. For Genkit AI features, ensure GOOGLE_API_KEY is set in your .env file for the Gemini model.
