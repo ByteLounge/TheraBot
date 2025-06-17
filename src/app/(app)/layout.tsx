@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter }_from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Spinner } from "@/components/shared/Spinner";
 
