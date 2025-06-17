@@ -3,13 +3,13 @@
 // Go to Project Overview (gear icon) > Project settings > General tab > Your apps > SDK setup and configuration.
 //
 // CRITICAL: Ensure 'projectId' is correct, otherwise Firestore and other services will not work.
-// CRITICAL: FILL IN ALL PLACEHOLDERS BELOW.
-// CRITICAL: The apiKey below was recently provided by you. Ensure all other values are correct for your Firebase project.
+// CRITICAL: FILL IN ALL REMAINING PLACEHOLDERS BELOW.
+// CRITICAL: The apiKey and projectId below were recently provided by you. Ensure all other values are correct for your Firebase project.
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBDRfsXeb7Rg43AWGzD8PPOVNTX9-f4NBY", // Updated based on your recent input
   authDomain: "FILL_IN_YOUR_AUTH_DOMAIN", // e.g., your-project-id.firebaseapp.com
-  projectId: "FILL_IN_YOUR_PROJECT_ID", // e.g., your-project-id
+  projectId: "YqcCDnPWKpTQzRF2dS9j", // e.g., your-project-id. PLEASE VERIFY THIS IS YOUR CORRECT FIREBASE PROJECT ID.
   storageBucket: "FILL_IN_YOUR_STORAGE_BUCKET", // e.g., your-project-id.appspot.com
   messagingSenderId: "FILL_IN_YOUR_MESSAGING_SENDER_ID",
   appId: "FILL_IN_YOUR_APP_ID",
