@@ -9,7 +9,7 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyBDRfsXeb7Rg43AWGzD8PPOVNTX9-f4NBY", // Updated based on your recent input
   authDomain: "FILL_IN_YOUR_AUTH_DOMAIN", // e.g., your-project-id.firebaseapp.com
-  projectId: "YqcCDnPWKpTQzRF2dS9j", // e.g., your-project-id. PLEASE VERIFY THIS IS YOUR CORRECT FIREBASE PROJECT ID.
+  projectId: "my-storage-d2075", // Updated based on your recent input
   storageBucket: "FILL_IN_YOUR_STORAGE_BUCKET", // e.g., your-project-id.appspot.com
   messagingSenderId: "FILL_IN_YOUR_MESSAGING_SENDER_ID",
   appId: "FILL_IN_YOUR_APP_ID",
