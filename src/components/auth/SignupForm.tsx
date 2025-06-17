@@ -66,8 +66,8 @@ export function SignupForm() {
         });
       }
       
-      toast({ title: "Signup Successful", description: "Welcome to TheraBot!" });
-      router.push("/dashboard");
+      toast({ title: "Signup Successful", description: "Please log in to continue." });
+      router.push("/login");
     } catch (error: any) {
       console.error("Signup error", error);
       toast({
