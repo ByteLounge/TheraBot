@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FormEvent } from "react";
@@ -10,9 +11,10 @@ import { interactWithAIChatbot, type AIChatbotInput, type AIChatbotOutput } from
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { SendHorizonal, BotIcon, Smile, Leaf } from "lucide-react";
-import { doc, setDoc, addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore";
+import { doc, addDoc, collection, serverTimestamp, Timestamp, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "../shared/Spinner";
 
 interface ChatSession {
@@ -37,12 +39,12 @@ export function ChatInterface() {
     role: "bot",
     content: `Hello ${userProfile?.displayName || 'there'}! I'm TheraBot, your friendly AI companion. How are you feeling today? You can talk to me about anything on your mind.`,
     timestamp: new Date(),
-    imageUrl: "https://placehold.co/40x40/D0C6E0/4A00E0.png?text=TB" // Placeholder bot avatar
+    imageUrl: "https://placehold.co/40x40/D0C6E0/4A00E0.png?text=TB"
   };
 
   useEffect(() => {
     setMessages([botWelcomeMessage]);
-  }, [userProfile?.displayName]); // Re-send welcome if userProfile changes
+  }, [userProfile?.displayName]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -53,29 +55,34 @@ export function ChatInterface() {
     }
   }, [messages]);
 
-  const saveMessageToFirestore = async (sessionId: string, message: Message) => {
+  const saveMessageToFirestore = async (sessionId: string, messageToSave: Message) => {
     if (!currentUser) return;
-    // We update the session document with the new message
-    // This assumes currentSessionId is correctly set for an existing or new session.
-    // For simplicity, we'll overwrite messages array. A more robust way would be to use arrayUnion.
     const sessionRef = doc(db, `users/${currentUser.uid}/chatSessions/${sessionId}`);
-    const updatedMessages = [...messages, message].map(msg => ({
-      ...msg,
-      // Ensure timestamp is a Firestore Timestamp for new messages
-      timestamp: msg.timestamp instanceof Date ? Timestamp.fromDate(msg.timestamp) : msg.timestamp,
-    }));
     
-    // Add the new message to the existing list
-    const finalMessages = messages.find(m => m.id === message.id) ? updatedMessages : [...updatedMessages, message];
+    const firestoreMessage = {
+      ...messageToSave,
+      timestamp: messageToSave.timestamp instanceof Date 
+                   ? Timestamp.fromDate(messageToSave.timestamp as Date) 
+                   : messageToSave.timestamp, // Handles if it's already a Firestore Timestamp object
+    };
 
-    await setDoc(sessionRef, { messages: finalMessages }, { merge: true });
+    try {
+      // arrayUnion will create the 'messages' field if it doesn't exist, or append to it if it does.
+      await updateDoc(sessionRef, {
+        messages: arrayUnion(firestoreMessage)
+      });
+    } catch (error) {
+      console.error("Error saving message to Firestore:", error);
+      toast({ title: "Error", description: "Could not save message to session.", variant: "destructive"});
+      // Potentially add more robust fallback or error handling if needed
+    }
   };
   
   const createNewSession = async (): Promise<string> => {
     if (!currentUser) throw new Error("User not authenticated");
     const sessionData: Omit<ChatSession, 'id' | 'messages'> = {
         userId: currentUser.uid,
-        createdAt: serverTimestamp() as Timestamp, // Cast for type safety during creation
+        createdAt: serverTimestamp() as Timestamp,
     };
     const sessionRef = await addDoc(collection(db, `users/${currentUser.uid}/chatSessions`), sessionData);
     return sessionRef.id;
@@ -102,17 +109,17 @@ export function ChatInterface() {
         try {
             sessionId = await createNewSession();
             setCurrentSessionId(sessionId);
-            // Save initial welcome message if not already part of session
+            // Save initial welcome message if it's the first message in the local state
             if (messages.length > 0 && messages[0].id.startsWith("welcome-")) {
-                 await saveMessageToFirestore(sessionId, {
-                    ...messages[0], 
-                    timestamp: Timestamp.fromDate(messages[0].timestamp as Date)
-                });
+                 await saveMessageToFirestore(sessionId, messages[0]); // Pass the welcome message object
             }
         } catch(error) {
             console.error("Failed to create session:", error);
             toast({ title: "Error", description: "Could not start a new chat session.", variant: "destructive"});
             setIsLoading(false);
+            // Re-add user message to input if session creation failed before it was saved
+            setMessages((prev) => prev.filter(m => m.id !== userMessage.id)); // Remove optimistic update
+            setInput(userMessage.content); // Restore input
             return;
         }
     }
@@ -120,7 +127,13 @@ export function ChatInterface() {
 
 
     try {
-      const chatHistoryForAI = messages.map(m => ({ role: m.role, content: m.content }));
+      // Create chat history for AI from the current local state, which now includes the user message
+      const chatHistoryForAI = messages.map(m => ({ role: m.role, content: m.content })); 
+      // Add the new user message to chatHistoryForAI if it wasn't captured by the map due to state update timing
+      if (!chatHistoryForAI.find(m => m.content === userMessage.content && m.role === 'user')) {
+          chatHistoryForAI.push({role: 'user', content: userMessage.content });
+      }
+
       const aiInput: AIChatbotInput = { userInput: userMessage.content, chatHistory: chatHistoryForAI };
       const aiResponse: AIChatbotOutput = await interactWithAIChatbot(aiInput);
 
@@ -141,9 +154,12 @@ export function ChatInterface() {
         role: "bot",
         content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date(),
+        imageUrl: "https://placehold.co/40x40/D0C6E0/4A00E0.png?text=TB"
       };
       setMessages((prev) => [...prev, errorMessage]);
-      await saveMessageToFirestore(sessionId, errorMessage);
+      if (sessionId) { // Ensure sessionId is available before saving error message
+        await saveMessageToFirestore(sessionId, errorMessage);
+      }
       toast({
         title: "Chatbot Error",
         description: "Could not get a response from the AI. Please check your connection or try again later.",
@@ -162,8 +178,9 @@ export function ChatInterface() {
 
   const handleQuickResponse = (text: string) => {
     setInput(text);
-    // Optionally, auto-submit after setting input
-    // handleSubmit(new Event('submit') as any); 
+    // Consider auto-submitting by creating a synthetic event if desired:
+    // const form = (document.querySelector('form') as HTMLFormElement); // Or get ref to form
+    // if (form) handleSubmit({ preventDefault: () => {}, currentTarget: form, target: form } as unknown as FormEvent);
   };
 
 
@@ -184,7 +201,7 @@ export function ChatInterface() {
             <div className="flex justify-start items-end gap-2 mb-4">
                 <Avatar className="h-8 w-8 self-start">
                     <AvatarImage src="https://placehold.co/40x40/D0C6E0/4A00E0.png?text=TB" alt="Bot" data-ai-hint="friendly robot" />
-                    <AvatarFallback><Bot size={18} /></AvatarFallback>
+                    <AvatarFallback><BotIcon size={18} /></AvatarFallback>
                 </Avatar>
                 <div className="bg-card text-card-foreground rounded-xl px-4 py-3 shadow-md rounded-bl-none border">
                     <Spinner className="h-5 w-5 text-primary" />
@@ -220,3 +237,4 @@ export function ChatInterface() {
     </Card>
   );
 }
+
