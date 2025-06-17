@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { Toaster } from "@/components/ui/toaster";
+import { ClientProviders } from "@/components/layout/ClientProviders";
 
 export const metadata: Metadata = {
   title: "TheraBot",
@@ -21,10 +20,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Belleza&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
+        <ClientProviders>
           {children}
-          <Toaster />
-        </AuthProvider>
+        </ClientProviders>
       </body>
     </html>
   );
