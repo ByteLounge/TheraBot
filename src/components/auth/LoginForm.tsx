@@ -49,7 +49,7 @@ export function LoginForm() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({ title: "Login Successful", description: "Welcome back!" });
-      router.push("/dashboard");
+      router.push("/"); // Redirect to the main app page
     } catch (error: any) {
       console.error("Login error", error);
       toast({
