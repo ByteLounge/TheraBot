@@ -4,7 +4,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { MapPin, ExternalLink } from "lucide-react";
-import Image from "next/image";
 
 export default function TherapistsPage() {
   const googleMapsUrl = "https://www.google.com/maps/search/psychotherapist+near+me";
@@ -17,15 +16,7 @@ export default function TherapistsPage() {
     <div className="container mx-auto py-8 flex justify-center">
       <Card className="w-full max-w-2xl shadow-xl">
         <CardHeader className="text-center">
-           <Image 
-            src="https://placehold.co/600x300.png" 
-            alt="Map illustration" 
-            width={600} 
-            height={300} 
-            className="rounded-t-lg object-cover mb-6"
-            data-ai-hint="map location"
-            />
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="mx-auto mb-4 mt-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <MapPin className="h-8 w-8" />
           </div>
           <CardTitle className="font-headline text-3xl">Find a Psychotherapist</CardTitle>
