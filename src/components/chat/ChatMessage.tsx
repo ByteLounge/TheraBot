@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bot, User } from "lucide-react";
@@ -13,7 +14,7 @@ export interface Message {
 
 interface ChatMessageProps {
   message: Message;
-  userName?: string;
+  userName?: string | null; // Allow null for userName
 }
 
 function formatTimestamp(timestamp: Message['timestamp']): string {
@@ -32,10 +33,17 @@ function formatTimestamp(timestamp: Message['timestamp']): string {
   return format(date, 'p'); // e.g., 12:00 PM
 }
 
+const getInitialsFallback = (name?: string | null): string => {
+  if (!name || name.trim() === "") return "U";
+  const parts = name.split(" ").filter(Boolean); // Filter out empty strings from multiple spaces
+  if (parts.length === 0) return "U";
+  return parts.map(n => n[0]).join("").toUpperCase();
+};
+
 
 export function ChatMessage({ message, userName }: ChatMessageProps) {
   const isUser = message.role === "user";
-  const initials = userName ? userName.split(" ").map(n => n[0]).join("").toUpperCase() : "U";
+  const initials = getInitialsFallback(userName);
 
   return (
     <div

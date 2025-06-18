@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { collection, query, orderBy, getDocs, doc, getDoc, Timestamp } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, doc, getDoc, Timestamp, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -104,9 +105,25 @@ export function ChatHistoryList() {
     }
   };
 
-  const handleDeleteSession = async (sessionId: string) => {
-    // Placeholder for delete functionality
-    toast({ title: "Not Implemented", description: "Delete functionality is coming soon." });
+  const handleDeleteSession = async (sessionIdToDelete: string) => {
+    if (!currentUser) {
+      toast({ title: "Error", description: "You must be logged in to delete sessions.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      const sessionRef = doc(db, `users/${currentUser.uid}/chatSessions`, sessionIdToDelete);
+      await deleteDoc(sessionRef);
+
+      setSessions(prevSessions => prevSessions.filter(s => s.id !== sessionIdToDelete));
+      if (selectedSession?.id === sessionIdToDelete) {
+        setSelectedSession(null);
+      }
+      toast({ title: "Session Deleted", description: "The chat session has been successfully deleted." });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      toast({ title: "Error", description: "Could not delete the chat session.", variant: "destructive" });
+    }
   };
 
   if (isLoading) {
@@ -190,7 +207,7 @@ export function ChatHistoryList() {
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="icon" className="text-destructive hover:bg-destructive/10">
+                    <Button variant="outline" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive-foreground">
                       <Trash2 className="h-4 w-4"/>
                     </Button>
                   </AlertDialogTrigger>
@@ -203,7 +220,7 @@ export function ChatHistoryList() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDeleteSession(selectedSession.id)} className="bg-destructive hover:bg-destructive/90">
+                      <AlertDialogAction onClick={() => handleDeleteSession(selectedSession.id)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
