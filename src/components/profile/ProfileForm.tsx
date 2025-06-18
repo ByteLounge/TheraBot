@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,12 +18,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore"; // Changed updateDoc to setDoc
 import { db, storage, auth } from "@/lib/firebase";
 import { updateProfile as updateFirebaseProfile } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState, useRef } from "react";
-import { UserCircle2, Mail, Cake, Save, Edit3, ImageUp } from "lucide-react";
+import { UserCircle2, Mail, Cake, Save, Edit3 } from "lucide-react"; // Removed ImageUp as it's not used
 import { Spinner } from "../shared/Spinner";
 
 const profileSchema = z.object({
@@ -81,13 +82,13 @@ export function ProfileForm() {
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userDocRef, {
+      // Use setDoc with merge: true to create the document if it doesn't exist, or update if it does.
+      await setDoc(userDocRef, {
         displayName: values.displayName,
         age: values.age || null,
         profileImageUrl: profileImageUrl,
-      });
+      }, { merge: true });
       
-      // Update Firebase Auth profile as well
       if (auth.currentUser) {
           await updateFirebaseProfile(auth.currentUser, {
               displayName: values.displayName,
@@ -95,7 +96,7 @@ export function ProfileForm() {
           });
       }
 
-      await reloadUserProfile(); // Refresh context
+      await reloadUserProfile(); 
       toast({ title: "Profile Updated", description: "Your profile has been successfully updated." });
     } catch (error: any) {
       console.error("Profile update error", error);
@@ -106,13 +107,15 @@ export function ProfileForm() {
       });
     } finally {
       setLoading(false);
-      setImageFile(null); // Reset file after upload
+      setImageFile(null); 
     }
   }
   
   const getInitials = (name?: string | null) => {
     if (!name) return "U";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+    const nameParts = name.trim().split(" ");
+    if (nameParts.length === 0 || nameParts[0] === "") return "U";
+    return nameParts.map(n => n[0]).join("").toUpperCase();
   };
 
 
@@ -121,7 +124,7 @@ export function ProfileForm() {
       <CardHeader className="text-center">
         <div className="mx-auto mb-4">
             <Avatar className="h-24 w-24 ring-4 ring-primary ring-offset-2 ring-offset-background">
-                <AvatarImage src={imagePreview || undefined} alt={userProfile?.displayName} data-ai-hint="user profile"/>
+                <AvatarImage src={imagePreview || undefined} alt={userProfile?.displayName || "User"} data-ai-hint="user profile"/>
                 <AvatarFallback className="text-3xl">
                     {getInitials(userProfile?.displayName)}
                 </AvatarFallback>
@@ -197,3 +200,4 @@ export function ProfileForm() {
     </Card>
   );
 }
+
