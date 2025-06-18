@@ -42,6 +42,10 @@ export const firebaseConfig = {
 //      }
 //    }
 //    Publish these rules in the Firebase console (Firestore Database > Rules).
-// 4. For Google Maps, ensure you have NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable set.
-// 5. For Genkit AI features, ensure GOOGLE_API_KEY is set in your .env file for the Gemini model.
-//    (This was set based on your input: AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk)
+// 4. For Genkit AI features (like the AI Chatbot and Report Generation):
+//    a. Ensure the GOOGLE_API_KEY in your .env file is correct and belongs to the Google Cloud project associated with your Firebase project.
+//    b. CRITICAL: Enable the "Generative Language API" in your Google Cloud Console.
+//       If you see an error like "Generative Language API has not been used in project ... or it is disabled",
+//       visit the URL provided in the error message (usually like https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=YOUR_PROJECT_NUMBER)
+//       and enable the API. This is required for Genkit to use Google's Gemini models.
+// 5. For Google Maps, ensure you have NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable set if you re-introduce map components.
