@@ -7,7 +7,7 @@
 // CRITICAL: The apiKey and projectId below were recently provided by you. Ensure all other values are correct for your Firebase project.
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyBDRfsXeb7Rg43AWGzD8PPOVNTX9-f4NBY", // From your input
+  apiKey: "AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk", // Updated
   authDomain: "FILL_IN_YOUR_AUTH_DOMAIN", // e.g., your-project-id.firebaseapp.com
   projectId: "my-storage-d2075", // From your input
   storageBucket: "FILL_IN_YOUR_STORAGE_BUCKET", // e.g., your-project-id.appspot.com
@@ -21,6 +21,7 @@ export const firebaseConfig = {
 //    To do this, you might need to enable the "Identity Toolkit API" in your Google Cloud Console.
 //    If you see an error like "auth/identity-toolkit-api-has-not-been-used-in-project-...",
 //    visit https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview (select your project) and enable it.
+//    If you're unsure of your project number, it's often part of the error message or can be found in the Google Cloud Console.
 // 2. Set up Firestore Database in your Firebase project (select a region if prompted).
 // 3. IMPORTANT: Configure your Firestore Security Rules in the Firebase console.
 //    The rules determine who can read/write data. If they are too restrictive,
@@ -43,4 +44,4 @@ export const firebaseConfig = {
 //    Publish these rules in the Firebase console (Firestore Database > Rules).
 // 4. For Google Maps, ensure you have NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable set.
 // 5. For Genkit AI features, ensure GOOGLE_API_KEY is set in your .env file for the Gemini model.
-//    (This was set based on your input: AIzaSyBDRfsXeb7Rg43AWGzD8PPOVNTX9-f4NBY)
+//    (This was set based on your input: AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk)
