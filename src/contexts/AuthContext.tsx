@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { User as FirebaseUser } from "firebase/auth";
@@ -59,31 +60,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   const reloadUserProfile = async () => {
     if (currentUser) {
-      await fetchUserProfile(currentUser);
+      try {
+        await fetchUserProfile(currentUser);
+      } catch (error) {
+        console.error("Error reloading user profile:", error);
+        // Optionally, handle the error in the UI, e.g., show a toast
+      }
     }
   };
 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      if (user) {
-        await fetchUserProfile(user);
-      } else {
-        setUserProfile(null);
+      try {
+        setCurrentUser(user);
+        if (user) {
+          await fetchUserProfile(user);
+        } else {
+          setUserProfile(null);
+        }
+      } catch (error) {
+        console.error("Error during auth state change or profile fetch:", error);
+        // Ensure userProfile is null if an error occurs during profile fetch for a logged-in user
+        if (user) {
+          setUserProfile(null); 
+        }
+      } finally {
+        setLoading(false); // Ensure loading is set to false even if there's an error
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
   const logout = async () => {
-    setLoading(true);
-    await auth.signOut();
-    setCurrentUser(null);
-    setUserProfile(null);
-    setLoading(false);
+    setLoading(true); // Indicate loading state during logout
+    try {
+      await auth.signOut();
+      setCurrentUser(null);
+      setUserProfile(null);
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   const value = {
