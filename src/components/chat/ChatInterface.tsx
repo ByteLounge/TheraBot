@@ -59,22 +59,33 @@ export function ChatInterface() {
     if (!currentUser) return;
     const sessionRef = doc(db, `users/${currentUser.uid}/chatSessions/${sessionId}`);
     
-    const firestoreMessage = {
-      ...messageToSave,
+    // Construct the message object for Firestore, ensuring optional fields are handled
+    const firestoreMessagePayload: {
+      id: string;
+      role: "user" | "bot";
+      content: string;
+      timestamp: Timestamp | Date | number | { seconds: number; nanoseconds: number; }; // Match Message['timestamp'] plus Firestore Timestamp
+      imageUrl?: string;
+    } = {
+      id: messageToSave.id,
+      role: messageToSave.role,
+      content: messageToSave.content,
       timestamp: messageToSave.timestamp instanceof Date 
                    ? Timestamp.fromDate(messageToSave.timestamp as Date) 
-                   : messageToSave.timestamp, // Handles if it's already a Firestore Timestamp object
+                   : messageToSave.timestamp,
     };
 
+    if (messageToSave.imageUrl !== undefined) {
+      firestoreMessagePayload.imageUrl = messageToSave.imageUrl;
+    }
+
     try {
-      // arrayUnion will create the 'messages' field if it doesn't exist, or append to it if it does.
       await updateDoc(sessionRef, {
-        messages: arrayUnion(firestoreMessage)
+        messages: arrayUnion(firestoreMessagePayload)
       });
     } catch (error) {
       console.error("Error saving message to Firestore:", error);
       toast({ title: "Error", description: "Could not save message to session.", variant: "destructive"});
-      // Potentially add more robust fallback or error handling if needed
     }
   };
   
@@ -83,7 +94,7 @@ export function ChatInterface() {
     const sessionData: Omit<ChatSession, 'id'> = {
         userId: currentUser.uid,
         createdAt: serverTimestamp() as Timestamp,
-        messages: [] // Initialize messages as an empty array
+        messages: [] 
     };
     const sessionRef = await addDoc(collection(db, `users/${currentUser.uid}/chatSessions`), sessionData);
     return sessionRef.id;
@@ -110,8 +121,6 @@ export function ChatInterface() {
         try {
             sessionId = await createNewSession();
             setCurrentSessionId(sessionId);
-            // Save initial welcome message if it's the first message in the local state
-            // and the session was just created (so messages array in Firestore is empty)
             if (messages.length > 0 && messages[0].id.startsWith("welcome-")) {
                  await saveMessageToFirestore(sessionId, messages[0]); 
             }
@@ -119,9 +128,8 @@ export function ChatInterface() {
             console.error("Failed to create session:", error);
             toast({ title: "Error", description: "Could not start a new chat session.", variant: "destructive"});
             setIsLoading(false);
-            // Re-add user message to input if session creation failed before it was saved
-            setMessages((prev) => prev.filter(m => m.id !== userMessage.id)); // Remove optimistic update
-            setInput(userMessage.content); // Restore input
+            setMessages((prev) => prev.filter(m => m.id !== userMessage.id)); 
+            setInput(userMessage.content); 
             return;
         }
     }
@@ -129,9 +137,7 @@ export function ChatInterface() {
 
 
     try {
-      // Create chat history for AI from the current local state, which now includes the user message
       const chatHistoryForAI = messages.map(m => ({ role: m.role, content: m.content })); 
-      // Add the new user message to chatHistoryForAI if it wasn't captured by the map due to state update timing
       if (!chatHistoryForAI.find(m => m.content === userMessage.content && m.role === 'user')) {
           chatHistoryForAI.push({role: 'user', content: userMessage.content });
       }
@@ -159,7 +165,7 @@ export function ChatInterface() {
         imageUrl: "https://placehold.co/40x40/D0C6E0/4A00E0.png?text=TB"
       };
       setMessages((prev) => [...prev, errorMessage]);
-      if (sessionId) { // Ensure sessionId is available before saving error message
+      if (sessionId) { 
         await saveMessageToFirestore(sessionId, errorMessage);
       }
       toast({
@@ -180,9 +186,6 @@ export function ChatInterface() {
 
   const handleQuickResponse = (text: string) => {
     setInput(text);
-    // Consider auto-submitting by creating a synthetic event if desired:
-    // const form = (document.querySelector('form') as HTMLFormElement); // Or get ref to form
-    // if (form) handleSubmit({ preventDefault: () => {}, currentTarget: form, target: form } as unknown as FormEvent);
   };
 
 
