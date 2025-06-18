@@ -179,7 +179,7 @@ export function ProfileForm() {
                 <FormItem>
                   <FormLabel className="flex items-center gap-1.5"><Cake size={16}/> Age (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Your Age" {...field} value={field.value ?? ""} />
+                    <Input type="number" placeholder="Your Age" {...field} value={field.value ?? ""} min={0} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
