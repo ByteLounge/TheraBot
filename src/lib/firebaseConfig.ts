@@ -21,6 +21,8 @@ export const firebaseConfig = {
 //    To do this, you might need to enable the "Identity Toolkit API" in your Google Cloud Console.
 //    If you see an error like "auth/identity-toolkit-api-has-not-been-used-in-project-...",
 //    visit https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview (select your project) and enable it.
+//    For project number 547292653843 (associated with Firebase project 'my-storage-d2075'), YOU MUST ENABLE THE IDENTITY TOOLKIT API at:
+//    https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview?project=547292653843
 //    If you're unsure of your project number, it's often part of the error message or can be found in the Google Cloud Console.
 // 2. Set up Firestore Database in your Firebase project (select a region if prompted).
 // 3. IMPORTANT: Configure your Firestore Security Rules in the Firebase console.
