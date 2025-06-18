@@ -48,4 +48,6 @@ export const firebaseConfig = {
 //       If you see an error like "Generative Language API has not been used in project ... or it is disabled",
 //       visit the URL provided in the error message (usually like https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=YOUR_PROJECT_NUMBER)
 //       and enable the API. This is required for Genkit to use Google's Gemini models.
+//       FOR PROJECT NUMBER 97272005284 (associated with Firebase project 'my-storage-d2075'), YOU MUST ENABLE THIS API at:
+//       https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=97272005284
 // 5. For Google Maps, ensure you have NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable set if you re-introduce map components.
