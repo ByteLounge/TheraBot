@@ -18,12 +18,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { doc, setDoc } from "firebase/firestore"; // Changed updateDoc to setDoc
+import { doc, setDoc } from "firebase/firestore";
 import { db, storage, auth } from "@/lib/firebase";
 import { updateProfile as updateFirebaseProfile } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState, useRef } from "react";
-import { UserCircle2, Mail, Cake, Save, Edit3 } from "lucide-react"; // Removed ImageUp as it's not used
+import { UserCircle2, Mail, Cake, Save, Edit3 } from "lucide-react";
 import { Spinner } from "../shared/Spinner";
 
 const profileSchema = z.object({
@@ -82,7 +82,6 @@ export function ProfileForm() {
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
-      // Use setDoc with merge: true to create the document if it doesn't exist, or update if it does.
       await setDoc(userDocRef, {
         displayName: values.displayName,
         age: values.age || null,
@@ -94,6 +93,7 @@ export function ProfileForm() {
               displayName: values.displayName,
               photoURL: profileImageUrl 
           });
+          await auth.currentUser.reload(); // Explicitly reload the auth user
       }
 
       await reloadUserProfile(); 
@@ -179,7 +179,7 @@ export function ProfileForm() {
                 <FormItem>
                   <FormLabel className="flex items-center gap-1.5"><Cake size={16}/> Age (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Your Age" {...field} value={field.value ?? ""} min={0} />
+                    <Input type="number" placeholder="Your Age" {...field} value={field.value ?? ""} min="0" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -200,4 +200,3 @@ export function ProfileForm() {
     </Card>
   );
 }
-
