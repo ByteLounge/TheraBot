@@ -80,9 +80,10 @@ export function ChatInterface() {
   
   const createNewSession = async (): Promise<string> => {
     if (!currentUser) throw new Error("User not authenticated");
-    const sessionData: Omit<ChatSession, 'id' | 'messages'> = {
+    const sessionData: Omit<ChatSession, 'id'> = {
         userId: currentUser.uid,
         createdAt: serverTimestamp() as Timestamp,
+        messages: [] // Initialize messages as an empty array
     };
     const sessionRef = await addDoc(collection(db, `users/${currentUser.uid}/chatSessions`), sessionData);
     return sessionRef.id;
@@ -110,8 +111,9 @@ export function ChatInterface() {
             sessionId = await createNewSession();
             setCurrentSessionId(sessionId);
             // Save initial welcome message if it's the first message in the local state
+            // and the session was just created (so messages array in Firestore is empty)
             if (messages.length > 0 && messages[0].id.startsWith("welcome-")) {
-                 await saveMessageToFirestore(sessionId, messages[0]); // Pass the welcome message object
+                 await saveMessageToFirestore(sessionId, messages[0]); 
             }
         } catch(error) {
             console.error("Failed to create session:", error);
