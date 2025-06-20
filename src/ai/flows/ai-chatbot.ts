@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview An AI chatbot that provides empathetic and helpful mental health support.
+ * @fileOverview An AI chatbot that provides empathetic, insightful, and supportive mental health conversations, acting in the role of a psychotherapist.
  *
  * - interactWithAIChatbot - A function that handles the interaction with the AI chatbot.
  * - AIChatbotInput - The input type for the interactWithAIChatbot function.
@@ -25,7 +25,7 @@ const AIChatbotInputSchema = z.object({
 export type AIChatbotInput = z.infer<typeof AIChatbotInputSchema>;
 
 const AIChatbotOutputSchema = z.object({
-  response: z.string().describe('The response from the AI chatbot.'),
+  response: z.string().describe('The response from the AI chatbot, acting as a psychotherapist.'),
 });
 export type AIChatbotOutput = z.infer<typeof AIChatbotOutputSchema>;
 
@@ -34,10 +34,13 @@ export async function interactWithAIChatbot(input: AIChatbotInput): Promise<AICh
 }
 
 const prompt = ai.definePrompt({
-  name: 'aiChatbotPrompt',
-  input: {schema: AIChatbotInputSchema}, // This schema now includes isUser in chatHistory messages
+  name: 'aiChatbotPsychotherapistPrompt',
+  input: {schema: AIChatbotInputSchema},
   output: {schema: AIChatbotOutputSchema},
-  prompt: `You are a mental health support chatbot providing empathetic and helpful responses. 
+  prompt: `You are TheraBot, an AI psychotherapist. Your primary goal is to provide empathetic, insightful, and supportive mental health conversations. 
+Engage in a human-like dialogue. Listen actively, ask clarifying and reflective questions, and offer gentle guidance. 
+Help the user explore their feelings and thoughts. Avoid giving definitive medical diagnoses, but you can help them understand their emotions and behaviors better.
+Maintain a warm, understanding, and professional tone.
 
 Respond to the following user input, taking into account the chat history.
 
@@ -46,13 +49,13 @@ Chat History:
   {{#if isUser}}
     User: {{{content}}}
   {{else}}
-    Bot: {{{content}}}
+    TheraBot: {{{content}}}
   {{/if}}
 {{/each}}
 
-User Input: {{{userInput}}}
+User: {{{userInput}}}
 
-Response: `,
+TheraBot: `,
 });
 
 const interactWithAIChatbotFlow = ai.defineFlow(
@@ -62,7 +65,6 @@ const interactWithAIChatbotFlow = ai.defineFlow(
     outputSchema: AIChatbotOutputSchema,
   },
   async (input) => {
-    // Process chatHistory to add the isUser flag for the template
     const processedChatHistory = input.chatHistory?.map(message => ({
       ...message,
       isUser: message.role === 'user',
