@@ -3,17 +3,15 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Leaf, BookOpen, Podcast, Smile } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const resources = [
   {
     title: "The Power of Now",
     description: "A guide to spiritual enlightenment by Eckhart Tolle.",
-    type: "Article", // Technically a PDF book, but "Article" fits the button text "Read More"
+    type: "Article",
     icon: BookOpen,
     link: "https://archive.org/download/ThePowerOfNowEckhartTolle_201806/The%20Power%20Of%20Now%20-%20Eckhart%20Tolle.pdf",
-    imageHint: "book cover"
   },
   {
     title: "Guided Meditation for Beginners",
@@ -21,24 +19,9 @@ const resources = [
     type: "Audio",
     icon: Podcast,
     link: "https://youtu.be/Evgx9yX2Vw8?feature=shared",
-    imageHint: "headphones meditation"
   },
-  {
-    title: "The Power of Positive Affirmations",
-    description: "Explore how positive self-talk can reshape your mindset.",
-    type: "Article",
-    icon: Smile,
-    link: "#",
-    imageHint: "positive quote"
-  },
-  {
-    title: "Building Resilience: Coping Strategies",
-    description: "Discover techniques to navigate life's challenges more effectively.",
-    type: "Guide",
-    icon: Leaf,
-    link: "#",
-    imageHint: "strong tree"
-  }
+  // Removed "The Power of Positive Affirmations"
+  // Removed "Building Resilience: Coping Strategies"
 ];
 
 export default function ResourcesPage() {
@@ -62,43 +45,46 @@ export default function ResourcesPage() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {resources.map((resource, index) => (
-          <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2.5 rounded-full bg-accent/20 text-accent-foreground">
-                  <resource.icon className="h-5 w-5" />
+      {resources.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {resources.map((resource, index) => (
+            <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2.5 rounded-full bg-accent/20 text-accent-foreground">
+                    <resource.icon className="h-5 w-5" />
+                  </div>
+                  <CardTitle className="font-headline text-lg">{resource.title}</CardTitle>
                 </div>
-                <CardTitle className="font-headline text-lg">{resource.title}</CardTitle>
-              </div>
-               <Image
-                  src={`https://placehold.co/600x400.png`}
-                  alt={resource.title}
-                  width={600}
-                  height={400}
-                  className="rounded-md object-cover aspect-[3/2]"
-                  data-ai-hint={resource.imageHint}
-                />
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <p className="text-sm text-muted-foreground">{resource.description}</p>
-            </CardContent>
-            <CardFooter>
-              <a
-                href={resource.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full"
-              >
-                <Button variant="outline" className="w-full">
-                  {resource.type === "Audio" ? "Listen Now" : "Read More"}
-                </Button>
-              </a>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+                {/* Image component removed */}
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p className="text-sm text-muted-foreground">{resource.description}</p>
+              </CardContent>
+              <CardFooter>
+                <a
+                  href={resource.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <Button variant="outline" className="w-full">
+                    {resource.type === "Audio" ? "Listen Now" : "Read More"}
+                  </Button>
+                </a>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="mt-12 text-center p-8 bg-card border">
+          <CardTitle className="font-headline text-2xl mb-3">No Resources Available Yet</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            We're working on curating helpful resources. Please check back soon!
+          </CardDescription>
+        </Card>
+      )}
+
        <Card className="mt-12 text-center p-8 bg-accent/30 border-accent/50">
         <CardTitle className="font-headline text-2xl mb-3">More Coming Soon!</CardTitle>
         <CardDescription className="text-muted-foreground">
