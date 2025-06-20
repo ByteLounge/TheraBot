@@ -24,6 +24,15 @@ interface ChatSession {
   messages: Message[];
 }
 
+// Type for Firestore message payload, imageUrl is optional
+interface FirestoreMessagePayload {
+  id: string;
+  role: "user" | "bot";
+  content: string;
+  timestamp: Timestamp | Date | number | { seconds: number; nanoseconds: number; };
+  imageUrl?: string; 
+}
+
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,14 +68,7 @@ export function ChatInterface() {
     if (!currentUser) return;
     const sessionRef = doc(db, `users/${currentUser.uid}/chatSessions/${sessionId}`);
     
-    // Construct the message object for Firestore, ensuring optional fields are handled
-    const firestoreMessagePayload: {
-      id: string;
-      role: "user" | "bot";
-      content: string;
-      timestamp: Timestamp | Date | number | { seconds: number; nanoseconds: number; }; // Match Message['timestamp'] plus Firestore Timestamp
-      imageUrl?: string;
-    } = {
+    const firestoreMessagePayload: FirestoreMessagePayload = {
       id: messageToSave.id,
       role: messageToSave.role,
       content: messageToSave.content,
@@ -75,7 +77,8 @@ export function ChatInterface() {
                    : messageToSave.timestamp,
     };
 
-    if (messageToSave.imageUrl !== undefined) {
+    // Only include imageUrl if it's for the bot and it's defined
+    if (messageToSave.role === 'bot' && messageToSave.imageUrl !== undefined) {
       firestoreMessagePayload.imageUrl = messageToSave.imageUrl;
     }
 
@@ -100,7 +103,6 @@ export function ChatInterface() {
     return sessionRef.id;
   };
 
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !currentUser) return;
@@ -110,7 +112,7 @@ export function ChatInterface() {
       role: "user",
       content: input,
       timestamp: new Date(),
-      imageUrl: userProfile?.profileImageUrl || undefined
+      // imageUrl is intentionally omitted for user messages
     };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -134,7 +136,6 @@ export function ChatInterface() {
         }
     }
     await saveMessageToFirestore(sessionId, userMessage);
-
 
     try {
       const chatHistoryForAI = messages.map(m => ({ role: m.role, content: m.content })); 
@@ -187,7 +188,6 @@ export function ChatInterface() {
   const handleQuickResponse = (text: string) => {
     setInput(text);
   };
-
 
   return (
     <Card className="flex h-[calc(100vh-10rem)] flex-col shadow-xl">
@@ -242,4 +242,3 @@ export function ChatInterface() {
     </Card>
   );
 }
-

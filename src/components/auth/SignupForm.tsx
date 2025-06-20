@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,13 +56,12 @@ export function SignupForm() {
       if (user) {
         await updateProfile(user, { displayName: values.name });
         
-        // Create user document in Firestore
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           displayName: values.name,
           email: values.email,
           createdAt: serverTimestamp(),
-          profileImageUrl: null,
+          // profileImageUrl: null, // Removed
           age: null,
         });
       }

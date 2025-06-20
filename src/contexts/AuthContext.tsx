@@ -12,7 +12,7 @@ interface UserProfile {
   displayName: string;
   email: string;
   age?: number;
-  profileImageUrl?: string;
+  // profileImageUrl?: string; // Removed
 }
 
 interface AuthContextType {
@@ -44,10 +44,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           displayName: profileData.displayName || user.displayName || "User",
           email: user.email || "",
           age: profileData.age,
-          profileImageUrl: profileData.profileImageUrl,
+          // profileImageUrl: profileData.profileImageUrl, // Removed
         });
       } else {
-         // Create a basic profile if it doesn't exist
         setUserProfile({
           displayName: user.displayName || user.email?.split('@')[0] || "User",
           email: user.email || "",
@@ -64,11 +63,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await fetchUserProfile(currentUser);
       } catch (error) {
         console.error("Error reloading user profile:", error);
-        // Optionally, handle the error in the UI, e.g., show a toast
       }
     }
   };
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -81,12 +78,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (error) {
         console.error("Error during auth state change or profile fetch:", error);
-        // Ensure userProfile is null if an error occurs during profile fetch for a logged-in user
         if (user) {
           setUserProfile(null); 
         }
       } finally {
-        setLoading(false); // Ensure loading is set to false even if there's an error
+        setLoading(false);
       }
     });
 
@@ -94,7 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const logout = async () => {
-    setLoading(true); // Indicate loading state during logout
+    setLoading(true);
     try {
       await auth.signOut();
       setCurrentUser(null);
@@ -102,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Error during logout:", error);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 

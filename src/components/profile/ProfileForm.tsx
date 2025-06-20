@@ -19,11 +19,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { doc, setDoc } from "firebase/firestore";
-import { db, storage, auth } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import { updateProfile as updateFirebaseProfile } from "firebase/auth";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useEffect, useState, useRef } from "react";
-import { UserCircle2, Mail, Cake, Save, Edit3 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { UserCircle2, Mail, Cake, Save } from "lucide-react";
 import { Spinner } from "../shared/Spinner";
 
 const profileSchema = z.object({
@@ -35,9 +34,6 @@ export function ProfileForm() {
   const { currentUser, userProfile, reloadUserProfile } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -53,17 +49,8 @@ export function ProfileForm() {
         displayName: userProfile.displayName || "",
         age: userProfile.age || undefined,
       });
-      setImagePreview(userProfile.profileImageUrl || null);
     }
   }, [userProfile, form]);
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
 
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     if (!currentUser) {
@@ -73,23 +60,14 @@ export function ProfileForm() {
     setLoading(true);
 
     try {
-      let profileImageUrl = userProfile?.profileImageUrl || null;
-
-      if (imageFile) {
-        const storageRef = ref(storage, `profileImages/${currentUser.uid}/${imageFile.name}`);
-        const snapshot = await uploadBytes(storageRef, imageFile);
-        profileImageUrl = await getDownloadURL(snapshot.ref);
-      }
-
       const userDocRef = doc(db, "users", currentUser.uid);
       
       const dataToSave = {
         displayName: values.displayName,
-        age: values.age ?? null, // Ensure age is null if undefined/empty, Zod handles coercion to number or NaN
-        profileImageUrl: profileImageUrl,
+        age: values.age ?? null, // Ensure age is null if undefined/empty
+        profileImageUrl: null, // No longer uploading images
       };
 
-      // Explicitly check for NaN in age before saving, as Firestore doesn't support NaN
       if (typeof dataToSave.age === 'number' && isNaN(dataToSave.age)) {
         dataToSave.age = null;
       }
@@ -99,7 +77,7 @@ export function ProfileForm() {
       if (auth.currentUser) {
           await updateFirebaseProfile(auth.currentUser, {
               displayName: values.displayName,
-              photoURL: profileImageUrl 
+              photoURL: null // No longer setting photoURL here
           });
           await auth.currentUser.reload();
       }
@@ -109,7 +87,7 @@ export function ProfileForm() {
     } catch (error: any) {
       console.error("Profile update error object:", error);
       let description = "Could not update profile. Please try again.";
-      if (error.code) { 
+      if (error.code && error.message) { 
         description = `Update failed: ${error.code}. ${error.message}`;
       } else if (error.message) {
         description = `Update failed: ${error.message}`;
@@ -121,44 +99,26 @@ export function ProfileForm() {
       });
     } finally {
       setLoading(false);
-      setImageFile(null); 
     }
   }
   
   const getInitials = (name?: string | null) => {
     if (!name) return "U";
-    const nameParts = name.trim().split(" ");
+    const nameParts = name.trim().split(" ").filter(Boolean);
     if (nameParts.length === 0 || nameParts[0] === "") return "U";
     return nameParts.map(n => n[0]).join("").toUpperCase();
   };
-
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-xl">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4">
             <Avatar className="h-24 w-24 ring-4 ring-primary ring-offset-2 ring-offset-background">
-                <AvatarImage src={imagePreview || undefined} alt={userProfile?.displayName || "User"} data-ai-hint="user profile"/>
+                {/* No AvatarImage, rely on AvatarFallback */}
                 <AvatarFallback className="text-3xl">
-                    {getInitials(userProfile?.displayName)}
+                    {getInitials(form.getValues("displayName") || userProfile?.displayName)}
                 </AvatarFallback>
             </Avatar>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                className="relative -top-6 -right-8 rounded-full h-8 w-8 p-0"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Change profile picture"
-            >
-                <Edit3 className="h-4 w-4" />
-            </Button>
-            <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*" 
-                onChange={handleImageChange}
-            />
         </div>
         <CardTitle className="font-headline text-3xl flex items-center justify-center gap-2">
             <UserCircle2 className="h-8 w-8 text-primary" /> Your Profile

@@ -8,13 +8,13 @@ export interface Message {
   id: string;
   role: "user" | "bot";
   content: string;
-  timestamp?: Date | number | { seconds: number, nanoseconds: number }; // Allow Firestore Timestamp like structure
-  imageUrl?: string; // Optional image URL for user/bot avatar
+  timestamp?: Date | number | { seconds: number, nanoseconds: number };
+  imageUrl?: string; // Still used for Bot's avatar, undefined for user
 }
 
 interface ChatMessageProps {
   message: Message;
-  userName?: string | null; // Allow null for userName
+  userName?: string | null;
 }
 
 function formatTimestamp(timestamp: Message['timestamp']): string {
@@ -25,25 +25,23 @@ function formatTimestamp(timestamp: Message['timestamp']): string {
   } else if (timestamp instanceof Date) {
     date = timestamp;
   } else if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
-    // Firestore Timestamp like
     date = new Date(timestamp.seconds * 1000 + (timestamp.nanoseconds || 0) / 1000000);
   } else {
-    return ''; // Invalid timestamp
+    return '';
   }
-  return format(date, 'p'); // e.g., 12:00 PM
+  return format(date, 'p');
 }
 
 const getInitialsFallback = (name?: string | null): string => {
   if (!name || name.trim() === "") return "U";
-  const parts = name.split(" ").filter(Boolean); // Filter out empty strings from multiple spaces
+  const parts = name.split(" ").filter(Boolean);
   if (parts.length === 0) return "U";
   return parts.map(n => n[0]).join("").toUpperCase();
 };
 
-
 export function ChatMessage({ message, userName }: ChatMessageProps) {
   const isUser = message.role === "user";
-  const initials = getInitialsFallback(userName);
+  const initials = getInitialsFallback(isUser ? userName : "TB"); // Use "TB" for Bot fallback if no image
 
   return (
     <div
@@ -78,7 +76,8 @@ export function ChatMessage({ message, userName }: ChatMessageProps) {
       </div>
       {isUser && (
         <Avatar className="h-8 w-8 self-start">
-          <AvatarImage src={message.imageUrl} alt={userName || "User"} data-ai-hint="profile avatar" />
+          {/* For user, AvatarImage src will be undefined, relying on AvatarFallback */}
+          <AvatarImage src={undefined} alt={userName || "User"} data-ai-hint="user profile" />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       )}

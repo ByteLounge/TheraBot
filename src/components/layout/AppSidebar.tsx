@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -27,7 +28,9 @@ export function AppSidebar() {
 
   const getInitials = (name?: string | null) => {
     if (!name) return "U";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+    const nameParts = name.trim().split(" ").filter(Boolean);
+    if (nameParts.length === 0 || nameParts[0] === "") return "U";
+    return nameParts.map(n => n[0]).join("").toUpperCase();
   };
   
   return (
@@ -71,7 +74,7 @@ export function AppSidebar() {
         {currentUser && userProfile && (
            <div className={cn("flex items-center gap-2 p-2 rounded-md hover:bg-sidebar-accent", sidebarState === 'collapsed' && 'justify-center')}>
             <Avatar className="h-8 w-8">
-              <AvatarImage src={userProfile.profileImageUrl || undefined} alt={userProfile.displayName} data-ai-hint="user profile" />
+              {/* Removed AvatarImage src, relying on AvatarFallback */}
               <AvatarFallback>{getInitials(userProfile.displayName)}</AvatarFallback>
             </Avatar>
             <div className={cn("flex flex-col", sidebarState === 'collapsed' && 'hidden')}>
