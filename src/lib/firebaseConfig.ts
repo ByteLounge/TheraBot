@@ -1,3 +1,4 @@
+
 // IMPORTANT: Replace ALL placeholder values below with your actual Firebase project configuration.
 // You can find these details in your Firebase project settings.
 // Go to Project Overview (gear icon) > Project settings > General tab > Your apps > SDK setup and configuration.
@@ -7,7 +8,7 @@
 // CRITICAL: The apiKey and projectId below were recently provided by you. Ensure all other values are correct for your Firebase project.
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk", // Updated
+  apiKey: "AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk", // From your input
   authDomain: "FILL_IN_YOUR_AUTH_DOMAIN", // e.g., your-project-id.firebaseapp.com
   projectId: "my-storage-d2075", // From your input
   storageBucket: "FILL_IN_YOUR_STORAGE_BUCKET", // e.g., your-project-id.appspot.com
@@ -27,24 +28,10 @@ export const firebaseConfig = {
 // 2. Set up Firestore Database in your Firebase project (select a region if prompted).
 //
 // 3. IMPORTANT: Configure your Firestore Security Rules in the Firebase console.
-//    The rules determine who can read/write data. If they are too restrictive,
-//    you will get errors like "client is offline" or permission denied.
-//    For development, a common starting point (NOT for production) might be:
-//    rules_version = '2';
-//    service cloud.firestore {
-//      match /databases/{database}/documents {
-//        // Allow authenticated users to read and write their own documents in the 'users' collection
-//        match /users/{userId} {
-//          allow read, write: if request.auth != null && request.auth.uid == userId;
-//        }
-//        // Allow authenticated users to read and write documents in their own 'chatSessions' subcollection
-//        match /users/{userId}/chatSessions/{sessionId} {
-//          allow read, write: if request.auth != null && request.auth.uid == userId;
-//        }
-//        // Add other rules as needed for your application
-//      }
-//    }
-//    Publish these rules in the Firebase console (Firestore Database > Rules).
+//    The rules determine who can read/write data. Replace the default (often overly permissive) rules
+//    with the contents of the `firestore.rules` file provided in the root of this project.
+//    These rules ensure that users can only access their own data.
+//    To deploy: Go to Firebase Console > Firestore Database > Rules tab > Paste content > Publish.
 //
 // 4. For Genkit AI features (like the AI Chatbot and Report Generation):
 //    a. Ensure the GOOGLE_API_KEY in your .env file is correct and belongs to the Google Cloud project associated with your Firebase project.
@@ -55,7 +42,7 @@ export const firebaseConfig = {
 //    c. If you see "API_KEY_SERVICE_BLOCKED" or "Requests to this API generativelanguage.googleapis.com method ... are blocked":
 //       This means your API key is restricted. In Google Cloud Console (for project 97272005284):
 //       - Go to "APIs & Services" > "Credentials".
-//       - Click on your API key (`AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk`).
+//       - Click on your API key (e.g., `AIzaSyAlLxjmilTGGq2Ni9Z_LvnaKuzToJqnlPk`).
 //       - Under "API restrictions", ensure "Generative Language API" is allowed, or select "Don't restrict key".
 //       - Under "Application restrictions", ensure they are not blocking your server/development environment.
 //       - Also, ensure your project has a valid billing account linked.

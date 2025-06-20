@@ -1,0 +1,31 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Rule for the 'users' collection
+    match /users/{userId} {
+      // Allow an authenticated user to:
+      // - Read their own document
+      // - Create their own document (e.g., on signup or first profile save)
+      // - Update their own document
+      // - Delete their own document (if needed in the future)
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Rule for the 'chatSessions' subcollection within each user's document
+    match /users/{userId}/chatSessions/{sessionId} {
+      // Allow an authenticated user to:
+      // - Read their own chat sessions
+      // - Create new chat sessions
+      // - Update their own chat sessions (e.g., adding messages)
+      // - Delete their own chat sessions
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // By default, deny all other access to prevent unauthorized operations
+    // on any other paths not explicitly defined above.
+    // This is implicitly handled if no other match /{document=**} allows general access.
+  }
+}
