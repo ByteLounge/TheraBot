@@ -31,10 +31,12 @@ export const firebaseConfig = {
 //    The rules determine who can read/write data. Replace the default (often overly permissive) rules
 //    with the contents of the `firestore.rules` file provided in the root of this project.
 //    These rules ensure that users can only access their own data.
-//    To deploy: Go to Firebase Console > Firestore Database > Rules tab > Paste content > Publish.
+//    To deploy: Go to Firebase Console > Firestore Database > Rules tab > Paste content from `firestore.rules` > Publish.
 //
 // 4. For Genkit AI features (like the AI Chatbot and Report Generation):
-//    a. Ensure the GOOGLE_API_KEY in your .env file is correct and belongs to the Google Cloud project associated with your Firebase project.
+//    a. Create a `.env` file in the root of your project and add your `GOOGLE_API_KEY`.
+//       Example `.env` file:
+//       GOOGLE_API_KEY=your_google_api_key_here
 //    b. CRITICAL: Enable the "Generative Language API" in your Google Cloud Console.
 //       If you see an error like "Generative Language API has not been used in project ... or it is disabled",
 //       FOR PROJECT NUMBER 97272005284 (associated with Firebase project 'my-storage-d2075'), YOU MUST ENABLE THIS API at:
