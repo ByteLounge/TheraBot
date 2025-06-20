@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 
 const resources = [
   {
-    title: "Understanding Mindfulness",
-    description: "Learn the basics of mindfulness and how it can improve your daily life.",
-    type: "Article",
+    title: "The Power of Now",
+    description: "A guide to spiritual enlightenment by Eckhart Tolle.",
+    type: "Article", // Technically a PDF book, but "Article" fits the button text "Read More"
     icon: BookOpen,
-    link: "#", // Placeholder link
-    imageHint: "open book"
+    link: "https://archive.org/download/ThePowerOfNowEckhartTolle_201806/The%20Power%20Of%20Now%20-%20Eckhart%20Tolle.pdf",
+    imageHint: "book cover"
   },
   {
     title: "Guided Meditation for Beginners",
@@ -72,10 +72,10 @@ export default function ResourcesPage() {
                 </div>
                 <CardTitle className="font-headline text-lg">{resource.title}</CardTitle>
               </div>
-               <Image 
-                  src={`https://placehold.co/600x400.png`} 
+               <Image
+                  src={`https://placehold.co/600x400.png`}
                   alt={resource.title}
-                  width={600} 
+                  width={600}
                   height={400}
                   className="rounded-md object-cover aspect-[3/2]"
                   data-ai-hint={resource.imageHint}
@@ -85,10 +85,10 @@ export default function ResourcesPage() {
               <p className="text-sm text-muted-foreground">{resource.description}</p>
             </CardContent>
             <CardFooter>
-              <a 
-                href={resource.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={resource.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full"
               >
                 <Button variant="outline" className="w-full">
