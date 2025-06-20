@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -7,8 +8,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function AppHeader() {
+interface AppHeaderProps {
+  className?: string;
+}
+
+export function AppHeader({ className }: AppHeaderProps) {
   const pathname = usePathname();
   const { currentUser, loading } = useAuth();
 
@@ -16,7 +22,10 @@ export function AppHeader() {
   const pageTitle = currentPage ? currentPage.label : "TheraBot";
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur md:px-6">
+    <header className={cn(
+      "sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur md:px-6",
+      className
+    )}>
       <div className="md:hidden"> {/* Only show trigger on mobile, sidebar is fixed on desktop */}
         <SidebarTrigger />
       </div>

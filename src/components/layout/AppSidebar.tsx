@@ -11,17 +11,25 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { navItems, siteConfig } from "@/config/nav";
 import { cn } from "@/lib/utils";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  isSplashAnimating: boolean;
+}
+
+const LOGO_ANIMATION_DURATION = "duration-1000";
+const SIDEBAR_ITEMS_FADE_DELAY = "delay-[200ms]"; // Delay after logo animation starts ending
+const SIDEBAR_ITEMS_FADE_DURATION = "duration-[500ms]";
+
+
+export function AppSidebar({ isSplashAnimating }: AppSidebarProps) {
   const pathname = usePathname();
   const { logout, userProfile, currentUser } = useAuth();
   const { state: sidebarState } = useSidebar();
@@ -35,15 +43,33 @@ export function AppSidebar() {
   
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="p-4">
-        <div className={cn(
-            "flex items-center gap-2",
-            sidebarState === "collapsed" && "justify-center"
-          )}>
-          <siteConfig.icon className="h-8 w-8 text-primary" />
+      <SidebarHeader className={cn(
+        "p-2 relative", // Ensure SidebarHeader itself is a positioning context if needed
+        isSplashAnimating ? "bg-transparent" : ""
+      )}>
+        <div 
+          className={cn(
+            "flex items-center gap-3 transition-all ease-in-out",
+            LOGO_ANIMATION_DURATION,
+            isSplashAnimating
+              ? "fixed left-1/2 top-1/2 z-[200] -translate-x-1/2 -translate-y-1/2 scale-150 transform"
+              : sidebarState === "collapsed"
+                ? "justify-center py-2" // Adjust padding when landed and collapsed
+                : "py-2" // Adjust padding when landed and expanded
+          )}
+        >
+          <siteConfig.icon className={cn(
+            "text-primary transition-all ease-in-out",
+            LOGO_ANIMATION_DURATION,
+            isSplashAnimating ? "h-16 w-16" : "h-8 w-8"
+          )} />
           <h1 className={cn(
-              "font-headline text-2xl font-semibold text-primary",
-              sidebarState === "collapsed" && "hidden"
+              "font-headline font-semibold text-primary transition-all ease-in-out",
+              LOGO_ANIMATION_DURATION,
+              isSplashAnimating
+                ? "text-5xl"
+                : "text-2xl",
+              isSplashAnimating ? "" : (sidebarState === "collapsed" ? "hidden" : "")
             )}
           >
             {siteConfig.name}
@@ -51,7 +77,11 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="flex-grow p-2">
+      <SidebarContent className={cn(
+        "flex-grow p-2 transition-opacity",
+        SIDEBAR_ITEMS_FADE_DURATION,
+        isSplashAnimating ? "opacity-0" : ["opacity-100", SIDEBAR_ITEMS_FADE_DELAY].join(" ")
+      )}>
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
@@ -70,11 +100,14 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="p-2 border-t">
+      <SidebarFooter className={cn(
+        "p-2 border-t transition-opacity",
+        SIDEBAR_ITEMS_FADE_DURATION,
+        isSplashAnimating ? "opacity-0" : ["opacity-100", SIDEBAR_ITEMS_FADE_DELAY].join(" ")
+      )}>
         {currentUser && userProfile && (
            <div className={cn("flex items-center gap-2 p-2 rounded-md hover:bg-sidebar-accent", sidebarState === 'collapsed' && 'justify-center')}>
             <Avatar className="h-8 w-8">
-              {/* Removed AvatarImage src, relying on AvatarFallback */}
               <AvatarFallback>{getInitials(userProfile.displayName)}</AvatarFallback>
             </Avatar>
             <div className={cn("flex flex-col", sidebarState === 'collapsed' && 'hidden')}>
