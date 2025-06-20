@@ -82,27 +82,41 @@ export function ProfileForm() {
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
-      await setDoc(userDocRef, {
+      
+      const dataToSave = {
         displayName: values.displayName,
-        age: values.age || null,
+        age: values.age ?? null, // Ensure age is null if undefined/empty, Zod handles coercion to number or NaN
         profileImageUrl: profileImageUrl,
-      }, { merge: true });
+      };
+
+      // Explicitly check for NaN in age before saving, as Firestore doesn't support NaN
+      if (typeof dataToSave.age === 'number' && isNaN(dataToSave.age)) {
+        dataToSave.age = null;
+      }
+      
+      await setDoc(userDocRef, dataToSave, { merge: true });
       
       if (auth.currentUser) {
           await updateFirebaseProfile(auth.currentUser, {
               displayName: values.displayName,
               photoURL: profileImageUrl 
           });
-          await auth.currentUser.reload(); // Explicitly reload the auth user
+          await auth.currentUser.reload();
       }
 
       await reloadUserProfile(); 
       toast({ title: "Profile Updated", description: "Your profile has been successfully updated." });
     } catch (error: any) {
-      console.error("Profile update error", error);
+      console.error("Profile update error object:", error);
+      let description = "Could not update profile. Please try again.";
+      if (error.code) { 
+        description = `Update failed: ${error.code}. ${error.message}`;
+      } else if (error.message) {
+        description = `Update failed: ${error.message}`;
+      }
       toast({
         title: "Update Failed",
-        description: error.message || "Could not update profile.",
+        description: description,
         variant: "destructive",
       });
     } finally {
