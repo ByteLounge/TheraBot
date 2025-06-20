@@ -4,8 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageSquarePlus, History, FileText, Bot, Users, Leaf } from "lucide-react";
-import Image from "next/image";
+import { MessageSquarePlus, History, FileText, Bot, Users, Leaf, UserCircle2, MapPin } from "lucide-react";
 
 interface ActionCardProps {
   title: string;
@@ -46,9 +45,6 @@ export default function DashboardPage() {
       <Card className="mb-8 overflow-hidden bg-gradient-to-r from-primary/80 via-primary/70 to-accent/70 p-1 shadow-xl">
         <div className="bg-card p-6 md:p-10 rounded-md">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex-shrink-0">
-                <Image src="https://placehold.co/150x150.png" alt="Therabot illustration" width={150} height={150} className="rounded-full border-4 border-primary/50" data-ai-hint="friendly robot"/>
-            </div>
             <div>
               <h1 className="font-headline text-3xl md:text-4xl font-semibold text-foreground mb-2">
                 Welcome, {userProfile?.displayName || "User"}!
@@ -87,7 +83,7 @@ export default function DashboardPage() {
           title="Your Profile"
           description="Manage your personal information and preferences."
           href="/profile"
-          icon={Users} 
+          icon={UserCircle2} 
           cta="Go to Profile"
         />
         <ActionCard
@@ -98,11 +94,11 @@ export default function DashboardPage() {
           cta="Explore Resources"
         />
          <ActionCard
-          title="Community Support"
-          description="Connect with others and share experiences (feature coming soon)."
-          href="#"
-          icon={Users}
-          cta="Coming Soon"
+          title="Find Therapists"
+          description="Locate mental health professionals near you."
+          href="/therapists"
+          icon={MapPin}
+          cta="Find a Therapist"
         />
       </div>
     </div>
