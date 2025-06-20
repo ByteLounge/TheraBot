@@ -20,7 +20,7 @@ const resources = [
     description: "A 10-minute guided meditation to help you relax and focus.",
     type: "Audio",
     icon: Podcast,
-    link: "#",
+    link: "https://youtu.be/Evgx9yX2Vw8?feature=shared",
     imageHint: "headphones meditation"
   },
   {
