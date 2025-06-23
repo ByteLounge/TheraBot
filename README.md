@@ -1,6 +1,12 @@
+---
+
 # TheraBot: Your AI Companion for Mental Wellness
 
+---
+
 TheraBot is a Next.js web application designed to be an AI-powered companion for mental wellness. It provides users with a safe space to chat with an AI therapist, review their conversation history, generate wellness reports, and manage their profile.
+
+---
 
 ## Features
 
@@ -13,6 +19,8 @@ TheraBot is a Next.js web application designed to be an AI-powered companion for
 *   **Mindful Growth Resources:** A curated list of articles and media for personal development.
 *   **Responsive Design:** User interface designed to work across various screen sizes.
 *   **Startup Animation:** An engaging animation when the app loads.
+
+---
 
 ## Technology Stack
 
@@ -32,6 +40,8 @@ TheraBot is a Next.js web application designed to be an AI-powered companion for
     *   `react-hook-form` for form handling
     *   `zod` for schema validation
     *   `date-fns` for date formatting
+
+---
 
 ## Local Setup Instructions
 
@@ -141,6 +151,8 @@ npm install
 
 Once both servers are running, open your browser and navigate to `http://localhost:9002` (or the port Next.js indicates).
 
+---
+
 ## Available Scripts
 
 *   `npm run dev`: Starts the Next.js development server (and Turbopack) on port 9002.
@@ -150,6 +162,8 @@ Once both servers are running, open your browser and navigate to `http://localho
 *   `npm run start`: Starts the production Next.js server (after running `build`).
 *   `npm run lint`: Lints the codebase using Next.js's built-in ESLint configuration.
 *   `npm run typecheck`: Runs TypeScript to check for type errors.
+
+---
 
 ## Project Structure Highlights
 
@@ -170,11 +184,39 @@ Once both servers are running, open your browser and navigate to `http://localho
 *   `public/`: Static assets.
 *   `firestore.rules`: Security rules for Cloud Firestore.
 
+---
+
+## UI/UX
+
+![Screenshot 2025-06-23 133309](https://github.com/user-attachments/assets/a56f51bc-9942-40ce-ba0e-d791671a6ada)
+
+![Screenshot 2025-06-23 133416](https://github.com/user-attachments/assets/b67e0851-a487-429c-9420-40c5a728907d)
+
+![Screenshot 2025-06-23 133440](https://github.com/user-attachments/assets/7463875f-b77a-4fd6-bc42-65a14b19d7b4)
+
+![Screenshot 2025-06-23 133640](https://github.com/user-attachments/assets/873d6a0b-0b4c-4808-9af3-34930ec70e66)
+
+![Screenshot 2025-06-23 134551](https://github.com/user-attachments/assets/b09904ab-0a24-4e42-8ffc-2a628ecd9326)
+
+![Screenshot 2025-06-23 134608](https://github.com/user-attachments/assets/a9380f23-788f-4ff6-8a92-54f30f62458d)
+
+![Screenshot 2025-06-23 134625](https://github.com/user-attachments/assets/0cd07b36-231d-43f7-b3b0-e2fc10af3d60)
+
+![Screenshot 2025-06-23 134707](https://github.com/user-attachments/assets/1de9b76c-f583-4e9f-bfa5-c8032c7771f2)
+
+![Screenshot 2025-06-23 134732](https://github.com/user-attachments/assets/4a723556-80f8-42df-a453-98c607d41e72)
+
+
+---
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
+---
+
 ## License
 
 This project is licensed under the MIT License. (You can update this if you have a different license).
-```
+
+---
